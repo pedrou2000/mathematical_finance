@@ -87,11 +87,7 @@ def plot_a(vector):
 if __name__ == "__main__":
     from dataframe_construction import *
 
-    test_daily = True 
-    if test_daily:
-        df = DailyData(datapath='data/')
-    else:
-        df = MonthlyData(datapath='data/')
+    df = Data(datapath='data/')
 
     a = estimate_a(df.weights_by_rank)#, smooth_method='moving_average', smooth_parameter=30)
     plot_a(a)

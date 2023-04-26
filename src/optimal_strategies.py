@@ -59,12 +59,7 @@ if __name__ == "__main__":
     N = 1000
     date = '2000-03-31'
 
-    test_daily = True 
-    if test_daily:
-        df = DailyData(datapath='data/')
-    else:
-        df = MonthlyData(datapath='data/')
-        
+    df = Data(datapath='data/')
     a = estimate_a(df.weights_by_rank)
     strategy = compute_weights_optimal_open(setting='pure', N=N, a=a, weights_by_rank=df.weights_by_rank)
 

@@ -6,7 +6,7 @@ seaborn.set()
 import wrds
 
 
-class MonthlyData:
+class Data:
     def __init__(self, d=2000, start_date='1965-01-01', datapath='../data/', filename='CRSP_monthly_cleaned.h5', 
         caps_table='mthprevcap', returns_table='mthret',):
         self.d = d 
@@ -120,22 +120,10 @@ class MonthlyData:
         return self.returns_by_permno.loc[date, permno]
 
 
-class DailyData(MonthlyData):
-    def __init__(self, d=3000, start_date='1965-01-01', datapath='../data/', filename='CRSP_2013_2018_daily_cleaned.h5', 
-        caps_table='dlyprevcap', returns_table='dlyret'):
-        super().__init__(d=d, start_date=start_date, datapath=datapath, filename=filename, 
-                         caps_table=caps_table, returns_table=returns_table) 
-    
-
-
 
 if __name__ == "__main__":
-    test_daily = True 
 
-    if test_daily:
-        df = DailyData(datapath='data/')
-    else:
-        df = MonthlyData(datapath='data/')
+    df = Data(datapath='data/')
 
     rank = 6
     date = '2015-09-30'

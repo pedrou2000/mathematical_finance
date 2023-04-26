@@ -8,7 +8,7 @@ class Backtest:
         self.weights_permno_by_rank = weights_permno_by_rank
         self.returns_by_permno = returns_by_permno
         self.dates = self.strategy.index.tolist()
-        self.rets = []
+        self.   s = []
         self.cumulative_rets = []
         self.first_date = strategy.index[0].date()
         self.last_date = strategy.index[-1].date()
@@ -74,12 +74,7 @@ if __name__ == "__main__":
     N = 10
     date = '2000-03-31'
 
-    test_daily = True 
-    if test_daily:
-        df = DailyData(datapath='data/')
-    else:
-        df = MonthlyData(datapath='data/')
-
+    df = Data(datapath='data/')
     a = estimate_a(df.weights_by_rank)
     strategy = compute_weights_optimal_open(setting='pure', N=N, a=a, weights_by_rank=df.weights_by_rank)
 
