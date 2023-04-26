@@ -8,59 +8,59 @@ class Backtest:
         self.weights_permno_by_rank = weights_permno_by_rank
         self.returns_by_permno = returns_by_permno
         self.dates = self.strategy.index.tolist()
-        self.interests = []
-        self.cumulative_interests = []
+        self.rets = []
+        self.cumulative_rets = []
         self.first_date = strategy.index[0].date()
         self.last_date = strategy.index[-1].date()
 
-    def interest_optimal_one_period(self, date):
+    def ret_optimal_one_period(self, date):
         try:
-            total_interest = 0
+            total_ret = 0
             for rank in list(self.strategy.columns):
                 percentage = self.strategy.loc[date, rank]
                 permno = self.weights_permno_by_rank.loc[date, rank][1]
                 ret = self.returns_by_permno.loc[date, permno]
-                interest = 1 + ret
-                total_interest += (percentage * interest)
-            return total_interest
+                ret = 1 + ret
+                total_ret += (percentage * ret)
+            return total_ret
         except KeyError:
             print(f"Date {date} not found in DataFrame index")
             return None
 
     def run(self):
-        cumulative_interest = 1 
+        cumulative_ret = 1 
         for date in self.dates:
-            interest = self.interest_optimal_one_period(date)
-            self.interests.append(interest)
-            cumulative_interest *= interest
-            self.cumulative_interests.append(cumulative_interest)
+            ret = self.ret_optimal_one_period(date)
+            self.rets.append(ret)
+            cumulative_ret *= ret
+            self.cumulative_rets.append(cumulative_ret)
     
 
-    def plot_interests(self):
+    def plot_rets(self):
         fig, ax = plt.subplots(figsize=(10, 3.5))
-        ax.plot(self.dates, self.interests)
+        ax.plot(self.dates, self.rets)
         ax.set_xlabel("Date")
-        ax.set_ylabel("Interests")
-        ax.set_title("Interests between " + str(self.first_date) + " and " + str(self.last_date))
+        ax.set_ylabel("rets")
+        ax.set_title("rets between " + str(self.first_date) + " and " + str(self.last_date))
         plt.show()
         plt.close()
     
-    def plot_cumulative_interests(self):
+    def plot_cumulative_rets(self):
         fig, ax = plt.subplots(figsize=(10, 3.5))
-        ax.plot(self.dates, self.cumulative_interests)
+        ax.plot(self.dates, self.cumulative_rets)
         ax.set_xlabel("Date")
-        ax.set_ylabel("Cumulative Interests")
-        ax.set_title("Cumulative Interests between " + str(self.first_date) + " and " + str(self.last_date))
+        ax.set_ylabel("Cumulative rets")
+        ax.set_title("Cumulative rets between " + str(self.first_date) + " and " + str(self.last_date))
         plt.show()
         plt.close()
     
-    def plot_cumulative_interests_years(self, years):
+    def plot_cumulative_rets_years(self, years):
         months = 12 * years
         fig, ax = plt.subplots(figsize=(10, 3.5))
-        ax.plot(self.dates[0:months], self.cumulative_interests[0:months])
+        ax.plot(self.dates[0:months], self.cumulative_rets[0:months])
         ax.set_xlabel("Date")
-        ax.set_ylabel("Cumulative Interests")
-        ax.set_title("Cumulative Interests during the first " + str(years) + " years.")
+        ax.set_ylabel("Cumulative rets")
+        ax.set_title("Cumulative rets during the first " + str(years) + " years.")
         plt.show()
         plt.close()
 
@@ -87,5 +87,5 @@ if __name__ == "__main__":
                         returns_by_permno=df.returns_by_permno)
     
     backtest.run()
-    backtest.plot_interests()
-    backtest.plot_cumulative_interests()
+    backtest.plot_rets()
+    backtest.plot_cumulative_rets()
