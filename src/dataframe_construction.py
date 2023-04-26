@@ -31,7 +31,7 @@ class MonthlyData:
                 print('df not in store.keys()')
                 return None
         caps_by_permno = raw_returns[raw_returns.index >= self.start_date]
-        caps_by_permno = caps_by_permno.shift(-1).iloc[:-1]
+        # caps_by_permno = caps_by_permno.shift(-1).iloc[:-1]
         return caps_by_permno
 
     def create_returns_by_permno_df(self):
@@ -42,7 +42,7 @@ class MonthlyData:
                 print('df not in store.keys()')
                 return None
         returns = raw_returns[raw_returns.index >= self.start_date]
-        returns = returns.shift(-1).iloc[:-1]
+        # returns = returns.shift(-1).iloc[:-1]
         return returns
 
     def create_weights_by_permno_df(self):
@@ -120,12 +120,25 @@ class MonthlyData:
         return self.returns_by_permno.loc[date, permno]
 
 
+class DailyData(MonthlyData):
+    def __init__(self, d=3000, start_date='1965-01-01', datapath='../data/', filename='CRSP_2013_2018_daily_cleaned.h5', 
+        caps_table='dlyprevcap', returns_table='dlyret'):
+        super().__init__(d=d, start_date=start_date, datapath=datapath, filename=filename, 
+                         caps_table=caps_table, returns_table=returns_table) 
+    
+
+
 
 if __name__ == "__main__":
-    df = MonthlyData(datapath='data/')
+    test_daily = True 
+
+    if test_daily:
+        df = DailyData(datapath='data/')
+    else:
+        df = MonthlyData(datapath='data/')
 
     rank = 6
-    date = '2022-09-30'
+    date = '2015-09-30'
     permno = df.get_permno_given_rank(date, rank)
     print(permno)
     print(df.get_weight_given_rank(date, rank))

@@ -10,6 +10,8 @@ class Backtest:
         self.dates = self.strategy.index.tolist()
         self.interests = []
         self.cumulative_interests = []
+        self.first_date = strategy.index[0].date()
+        self.last_date = strategy.index[-1].date()
 
     def interest_optimal_one_period(self, date):
         try:
@@ -39,7 +41,7 @@ class Backtest:
         ax.plot(self.dates, self.interests)
         ax.set_xlabel("Date")
         ax.set_ylabel("Interests")
-        ax.set_title("Interests over Time")
+        ax.set_title("Interests between " + str(self.first_date) + " and " + str(self.last_date))
         plt.show()
         plt.close()
     
@@ -48,7 +50,7 @@ class Backtest:
         ax.plot(self.dates, self.cumulative_interests)
         ax.set_xlabel("Date")
         ax.set_ylabel("Cumulative Interests")
-        ax.set_title("Cumulative Interests over 1973-2022")
+        ax.set_title("Cumulative Interests between " + str(self.first_date) + " and " + str(self.last_date))
         plt.show()
         plt.close()
     
@@ -72,7 +74,12 @@ if __name__ == "__main__":
     N = 10
     date = '2000-03-31'
 
-    df = MonthlyData(datapath='data/')
+    test_daily = True 
+    if test_daily:
+        df = DailyData(datapath='data/')
+    else:
+        df = MonthlyData(datapath='data/')
+
     a = estimate_a(df.weights_by_rank)
     strategy = compute_weights_optimal_open(setting='pure', N=N, a=a, weights_by_rank=df.weights_by_rank)
 
