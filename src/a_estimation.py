@@ -84,7 +84,6 @@ def plot_a(vector):
 
 
 
-
 if __name__ == "__main__":
     from dataframe_construction import MonthlyData
 

@@ -42,7 +42,6 @@ def compute_weights_optimal_open(setting, N, a, weights_by_rank):
         print('Not Implemented')
 
 
-
 def plot_strategy(strategy, date):
     fig, ax = plt.subplots(figsize=(10, 3.5))
     ax.plot(strategy.loc[date])
@@ -50,8 +49,6 @@ def plot_strategy(strategy, date):
     ax.set_xlabel("Rank")
     ax.set_ylabel("Proportion of Wealth")
     plt.show()
-
-
 
 
 
