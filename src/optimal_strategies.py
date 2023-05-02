@@ -49,6 +49,7 @@ def plot_strategy(strategy, date, data_path = None):
     ax.set_title('Weights of the Optimal Strategy')
     ax.set_xlabel("Rank")
     ax.set_ylabel("Proportion of Wealth")
+    
     if data_path is None:
         plt.show()
     else:

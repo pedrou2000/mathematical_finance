@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn
 seaborn.set()
+from scipy.optimize import curve_fit
 from scipy.ndimage import filters
 
 
@@ -19,6 +20,13 @@ def smooth_time_series(time_series, smooth_method, smooth_parameter):
         poly_coeffs = np.polyfit(x_values, time_series, smooth_parameter)
         poly_fit = np.poly1d(poly_coeffs)
         smoothed = pd.Series(poly_fit(x_values))
+    elif smooth_method == 'exponential_decay':
+        def exp_decay(x, a, b, c):
+            return a * np.exp(-b * x) + c
+        
+        x_values = np.arange(len(time_series))
+        popt_exp_decay, _ = curve_fit(exp_decay, x_values, time_series, p0=(1, 0.1, 1))
+        smoothed = exp_decay(x_values, *popt_exp_decay)
     else:
         raise ValueError("Invalid smoothing method. Available methods are 'moving_average', 'exponential_moving_average', 'gaussian', and 'polynomial'.")
 
@@ -86,6 +94,7 @@ def plot_a(vector, data_path = None):
     ax.set_title('a given rank')
     ax.set_xlabel("rank")
     ax.set_ylabel("a")
+
     if data_path is None:
         plt.show()
     else:
