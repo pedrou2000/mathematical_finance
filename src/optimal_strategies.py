@@ -15,6 +15,7 @@ def compute_weights_optimal_pure_open(N, a, weights_by_rank):
 
 def compute_weights_optimal_mixed_open(N, a, weights_by_rank):
     a_N = a[:N]  # Take the first N elements of the vector 'a'
+    # a_1_d = 0  # Compute the sum of all elements in 'a'
     a_1_d = a.sum()  # Compute the sum of all elements in 'a'
     a_N_plus_1_d = a[N:].sum()  # Compute the sum of the elements from a_{N+1} to a_d
     term = 2 - a_1_d  # Compute the term (2 - 𝑎̅_1^d)
@@ -42,13 +43,17 @@ def compute_weights_optimal_open(setting, N, a, weights_by_rank):
         print('Not Implemented')
 
 
-def plot_strategy(strategy, date):
+def plot_strategy(strategy, date, data_path = None):
     fig, ax = plt.subplots(figsize=(10, 3.5))
     ax.plot(strategy.loc[date])
     ax.set_title('Weights of the Optimal Strategy')
     ax.set_xlabel("Rank")
     ax.set_ylabel("Proportion of Wealth")
-    plt.show()
+    if data_path is None:
+        plt.show()
+    else:
+        plt.savefig(f'{data_path}.png', dpi=300)
+        
 
 
 
