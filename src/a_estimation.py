@@ -79,7 +79,7 @@ def compute_a_moment_matching(weights_by_rank_df, smooth_method='exponential_mov
 
 def estimate_a(weights_by_rank_df, method='direct_log', smooth_method='exponential_moving_average', smooth_parameter=0.01, smooth_a=True):
     if method == 'direct_log':
-        return compute_a_direct_log(weights_by_rank_df, smooth_method=smooth_method, smooth_parameter=smooth_parameter, smooth_a=True)
+        return compute_a_direct_log(weights_by_rank_df, smooth_method=smooth_method, smooth_parameter=smooth_parameter, smooth_a=smooth_a)
     elif method == 'moment_matching':
         return compute_a_moment_matching(weights_by_rank_df, smooth_method=smooth_method, smooth_parameter=smooth_parameter)
         
