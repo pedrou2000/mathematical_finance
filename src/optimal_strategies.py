@@ -34,11 +34,51 @@ def compute_weights_optimal_mixed_open(N, a, weights_by_rank):
 
     return optimal_strategy_percentage
 
-def compute_weights_optimal_open(setting, N, a, weights_by_rank):
+def compute_theta_optimal_mixed_open(N, a, weights_by_rank):
+    optimal_strategy_percentage = compute_weights_optimal_mixed_open(N, a, weights_by_rank)
+    real_strategy = optimal_strategy_percentage.div(weights_by_rank)
+    return real_strategy
+
+def compute_pi_given_theta(theta_strategy, weights_by_rank):
+    optimal_strategy_percentage = theta_strategy.mul(weights_by_rank)
+    return optimal_strategy_percentage
+
+def compute_scaled_weights_optimal_mixed_open(N, a, weights_by_rank, leverage_scaler=1):
+    strategy_theta = compute_theta_optimal_mixed_open(N=N, a=a, weights_by_rank=weights_by_rank)
+
+    remaining_weights_by_rank = weights_by_rank.iloc[:, N:].copy()
+    Y_N_plus_1_d = remaining_weights_by_rank.sum(axis=1)
+
+    # Scale the first N columns by leverage_scaler
+    scaled_topN = strategy_theta.iloc[:, :N].mul(leverage_scaler, axis=0)
+
+    # Calculate beta(t) for each row (date)
+    beta_t = strategy_theta.iloc[:, N:].mean(axis=1)
+
+    # Compute the new values for the remaining columns
+    new_values = leverage_scaler * beta_t + (1 - leverage_scaler) / Y_N_plus_1_d
+
+    # Create a DataFrame with the same shape as the remaining columns and with the replicated new_values
+    new_values_df = pd.DataFrame(np.outer(new_values, np.ones(strategy_theta.shape[1] - N)),
+                                  index=strategy_theta.index,
+                                  columns=strategy_theta.columns[N:])
+
+    # Combine the two results
+    scaled_strategy_theta = pd.concat([scaled_topN, new_values_df], axis=1)
+
+
+    strategy_pi_2 = compute_pi_given_theta(scaled_strategy_theta, weights_by_rank=weights_by_rank)
+    return strategy_pi_2
+
+
+def compute_weights_optimal_open(setting, N, a, weights_by_rank, leverage_scaler=None):
     if setting == 'pure':
         return compute_weights_optimal_pure_open(N=N, a=a, weights_by_rank=weights_by_rank)
     elif setting == 'mixed':
-        return compute_weights_optimal_mixed_open(N=N, a=a, weights_by_rank=weights_by_rank)
+        if leverage_scaler is None:
+            return compute_weights_optimal_mixed_open(N=N, a=a, weights_by_rank=weights_by_rank)
+        else:
+            return compute_scaled_weights_optimal_mixed_open(N=N, a=a, weights_by_rank=weights_by_rank, leverage_scaler=leverage_scaler)
     else:
         print('Not Implemented')
 

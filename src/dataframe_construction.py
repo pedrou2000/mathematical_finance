@@ -7,10 +7,11 @@ import wrds
 
 
 class Data:
-    def __init__(self, d=2000, start_date='1965-01-01', datapath='../data/', filename='CRSP_monthly_cleaned.h5', 
+    def __init__(self, d=2000, start_date='1965-01-01', end_date=None, datapath='../data/', filename='CRSP_monthly_cleaned.h5', 
         caps_table='mthprevcap', returns_table='mthret',):
         self.d = d 
         self.start_date = start_date 
+        self.end_date = end_date
         self.datapath = datapath 
         self.filepath = self.datapath + filename 
         self.caps_table = caps_table 
@@ -30,7 +31,7 @@ class Data:
             else:
                 print('df not in store.keys()')
                 return None
-        caps_by_permno = raw_returns[raw_returns.index >= self.start_date]
+        caps_by_permno = raw_returns[(raw_returns.index >= self.start_date) & (raw_returns.index <= (self.end_date or raw_returns.index.max()))]
         # caps_by_permno = caps_by_permno.shift(-1).iloc[:-1]
         return caps_by_permno
 
@@ -41,7 +42,7 @@ class Data:
             else:
                 print('df not in store.keys()')
                 return None
-        returns = raw_returns[raw_returns.index >= self.start_date]
+        returns = raw_returns[(raw_returns.index >= self.start_date) & (raw_returns.index <= (self.end_date or raw_returns.index.max()))]
         # returns = returns.shift(-1).iloc[:-1]
         return returns
 

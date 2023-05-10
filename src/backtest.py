@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Backtest:
-    def __init__(self, strategy, weights_permno_by_rank, returns_by_permno):
+    def __init__(self, strategy, weights_permno_by_rank, returns_by_permno, risk_free_rate):
         self.strategy = strategy 
         self.weights_permno_by_rank = weights_permno_by_rank
         self.weights_by_rank = self.weights_permno_by_rank.applymap(lambda x: x[0])
@@ -11,8 +11,17 @@ class Backtest:
         self.dates = self.strategy.index.tolist()
         self.first_date = strategy.index[0].date()
         self.last_date = strategy.index[-1].date()
+        self.risk_free_rate = risk_free_rate
+
+        self.average_return_percentage = None
+        self.average_return = None
+        self.sd_return = None
+        self.end_period_cumulative_wealth = None
+        self.sharpe_ratio = None
+
         self.dX_t_div_X_t = None
         self.covariance_matrix = None
+        self.flag_negative_return = False
     
     def set_strategy(self, new_strategy):
         self.strategy = new_strategy 
@@ -34,6 +43,7 @@ class Backtest:
             return None
 
     def run(self):
+        self.flag_negative_return = False
         self.rets = []
         self.cumulative_rets = []
         cumulative_ret = 1 
@@ -42,7 +52,15 @@ class Backtest:
             ret = self.ret_optimal_one_period(date)
             self.rets.append(ret)
             cumulative_ret *= ret
+            if cumulative_ret <= 0:
+                self.flag_negative_return = True
             self.cumulative_rets.append(cumulative_ret)
+        
+        self.average_return_percentage = round((np.mean(self.rets)-1)*100, 3)
+        self.average_return = round(np.mean(self.rets), 4)
+        self.sd_return = round(np.std(self.rets), 4)
+        self.end_period_cumulative_wealth = round(self.cumulative_rets[-1], 4)
+        self.sharpe_ratio = (self.average_return - 1 - self.risk_free_rate) / self.sd_return
 
     def compute_dX_t_div_X_t(self):
         # Compute the percentage change between rows
@@ -60,47 +78,8 @@ class Backtest:
             result[index] = outer_product
 
         self.covariance_matrix = result
-
+   
     def backtest_log_wealth(self):
-        self.log_wealths = []
-        self.cumulative_log_wealths = []
-
-        if self.dX_t_div_X_t is None:
-            self.compute_dX_t_div_X_t()
-        if self.covariance_matrix is None:
-            self.compute_covariance_matrix()
-
-        # Term 1: Initialize an empty dataframe to store the results adn iterate over the dates
-        term_1 = pd.DataFrame(index=self.strategy.index, columns=['dot_product'])
-        for date in self.strategy.index:
-            strategy_t = self.strategy.loc[date]
-            dX_t_div_X_t = self.dX_t_div_X_t.loc[date].iloc[:len(strategy_t)]
-            
-            dot_product = strategy_t.dot(dX_t_div_X_t)
-            term_1.loc[date, 'dot_product'] = dot_product
-
-
-        # Term 2: Initialize an empty dataframe to store the results and iterate over the dates
-        term_2 = pd.DataFrame(index=self.strategy.index, columns=['result'])
-        for date in self.strategy.index:
-            strategy_t = self.strategy.loc[date]
-            rank_indices = strategy_t.index - 1
-            covariance_matrix_t = self.covariance_matrix[date][rank_indices, :][:, rank_indices]
-            result_t = strategy_t.T @ covariance_matrix_t @ strategy_t
-            term_2.loc[date, 'result'] = result_t
-
-        
-        # Final Computation of the log Wealth: Iterate over the dates
-        sum_log_wealth = 0
-        for date in term_1.index:
-            term_1_t = term_1.loc[date, 'dot_product']
-            term_2_t = term_2.loc[date, 'result']
-            result_t = term_1_t - 0.5 * term_2_t
-            sum_log_wealth += result_t
-            self.log_wealths.append(result_t)
-            self.cumulative_log_wealths.append(sum_log_wealth)
-    
-    def backtest_log_wealth_t_minus_1_pi(self):
         self.log_wealths = []
         self.cumulative_log_wealths = []
 
@@ -144,53 +123,77 @@ class Backtest:
             self.cumulative_log_wealths.append(sum_log_wealth)
 
 
-    def plot_rets(self):
+    def plot_rets(self, data_path=None):
         fig, ax = plt.subplots(figsize=(10, 3.5))
         ax.plot(self.dates, self.rets)
         ax.set_xlabel("Date")
         ax.set_ylabel("rets")
         ax.set_title("rets between " + str(self.first_date) + " and " + str(self.last_date))
-        plt.show()
+        
+        if data_path is None:
+            plt.show()
+        else:
+            plt.savefig(f'{data_path}.png', dpi=300)
+        
         plt.close()
-    
-    def plot_cumulative_rets(self):
+
+    def plot_cumulative_rets(self, data_path=None):
         fig, ax = plt.subplots(figsize=(10, 3.5))
         ax.plot(self.dates, self.cumulative_rets)
         ax.set_xlabel("Date")
         ax.set_ylabel("Cumulative rets")
         ax.set_title("Cumulative Returns between " + str(self.first_date) + " and " + str(self.last_date))
-        plt.show()
+        
+        if data_path is None:
+            plt.show()
+        else:
+            plt.savefig(f'{data_path}.png', dpi=300)
+        
         plt.close()
-    
-    def plot_cumulative_rets_years(self, year_start, year_end):
+
+    def plot_cumulative_rets_years(self, year_start, year_end, data_path=None):
         months_start = 12 * year_start
         months_end = 12 * year_end
         fig, ax = plt.subplots(figsize=(10, 3.5))
         ax.plot(self.dates[months_start:months_end], self.cumulative_rets[months_start:months_end])
         ax.set_xlabel("Date")
         ax.set_ylabel("Cumulative rets")
-        ax.set_title("Cumulative Returns from" ,year_start, "years to" ,year_end)
-        plt.show()
+        ax.set_title(f"Cumulative Returns from {year_start} years to {year_end} years")
+        
+        if data_path is None:
+            plt.show()
+        else:
+            plt.savefig(f'{data_path}.png', dpi=300)
+        
         plt.close()
-    
-    def plot_log_wealth(self):
+
+    def plot_log_wealth(self, data_path=None):
         fig, ax = plt.subplots(figsize=(10, 3.5))
-        ax.plot(self.dates, self.log_wealths)
+        ax.plot(self.dates, self.cumulative_log_wealths)
         ax.set_xlabel("Date")
         ax.set_ylabel("Log Wealth Variation")
         ax.set_title("Log Wealth Variation between " + str(self.first_date) + " and " + str(self.last_date))
-        plt.show()
-        plt.close()   
+        
+        if data_path is None:
+            plt.show()
+        else:
+            plt.savefig(f'{data_path}.png', dpi=300)
+        
+        plt.close()
 
-    def plot_cumulative_log_wealth(self):
+    def plot_cumulative_log_wealth(self, data_path=None):
         fig, ax = plt.subplots(figsize=(10, 3.5))
         ax.plot(self.dates, self.cumulative_log_wealths)
         ax.set_xlabel("Date")
         ax.set_ylabel("Cumulative log Wealth")
         ax.set_title("Cumulative log Wealth between " + str(self.first_date) + " and " + str(self.last_date))
-        plt.show()
+        
+        if data_path is None:
+            plt.show()
+        else:
+            plt.savefig(f'{data_path}.png', dpi=300)
+        
         plt.close()
-
 
 
 if __name__ == "__main__":
