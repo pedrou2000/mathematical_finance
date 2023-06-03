@@ -56,11 +56,15 @@ class Backtest:
                 self.flag_negative_return = True
             self.cumulative_rets.append(cumulative_ret)
         
-        self.average_return_percentage = round((np.mean(self.rets)-1)*100, 3)
-        self.average_return = round(np.mean(self.rets), 4)
-        self.sd_return = round(np.std(self.rets), 4)
+        excess_returns = np.array(self.rets) - 1.0 - self.risk_free_rate
+        self.average_return_percentage = round((np.mean(excess_returns))*100, 3)
+        self.average_return = round(np.mean(excess_returns), 4)
+        self.sd_return = round(np.std(excess_returns), 4)
         self.end_period_cumulative_wealth = round(self.cumulative_rets[-1], 4)
-        self.sharpe_ratio = (self.average_return - 1 - self.risk_free_rate) / self.sd_return
+        self.sharpe_ratio = self.average_return / self.sd_return
+
+        self.max_drawdown = np.max(np.maximum.accumulate(self.cumulative_rets) - self.cumulative_rets) # Check: /np.maximum.accumulate(self.cumulative_rets)
+        self.calmar_ratio = self.average_return / self.max_drawdown
 
     def compute_dX_t_div_X_t(self):
         # Compute the percentage change between rows

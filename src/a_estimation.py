@@ -27,6 +27,13 @@ def smooth_time_series(time_series, smooth_method, smooth_parameter):
         x_values = np.arange(len(time_series))
         popt_exp_decay, _ = curve_fit(exp_decay, x_values, time_series, p0=(1, 0.1, 1))
         smoothed = exp_decay(x_values, *popt_exp_decay)
+    elif smooth_method == 'exponential_decay_2':
+        def exp_decay(x, a, b):
+            return a * (1 - np.exp(-b * x))
+        
+        x_values = np.arange(len(time_series))
+        popt_exp_decay, _ = curve_fit(exp_decay, x_values, time_series, p0=(1, 0.1))
+        smoothed = exp_decay(x_values, *popt_exp_decay)
     else:
         raise ValueError("Invalid smoothing method. Available methods are 'moving_average', 'exponential_moving_average', 'gaussian', and 'polynomial'.")
 

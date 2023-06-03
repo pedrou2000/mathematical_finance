@@ -82,6 +82,9 @@ def compute_weights_optimal_open(setting, N, a, weights_by_rank, leverage_scaler
     else:
         print('Not Implemented')
 
+def compute_weights_market_portfolio(weights_by_rank):
+    return weights_by_rank
+
 
 def plot_strategy(strategy, date, data_path = None):
     fig, ax = plt.subplots(figsize=(10, 3.5))
