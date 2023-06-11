@@ -98,9 +98,9 @@ def get_a_given_rank(a, rank):
 def plot_a(vector, data_path = None):
     fig, ax = plt.subplots(figsize=(10, 3.5))
     ax.plot(vector)
-    ax.set_title('a given rank')
-    ax.set_xlabel("rank")
-    ax.set_ylabel("a")
+    ax.set_title('a estimation')
+    ax.set_xlabel("k")
+    ax.set_ylabel("a_k")
 
     if data_path is None:
         plt.show()
