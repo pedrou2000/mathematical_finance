@@ -127,6 +127,57 @@ class Backtest:
             self.cumulative_log_wealths.append(sum_log_wealth)
 
 
+
+
+    def calculate_theta_X_diff(self):
+        # Calculate X_t - X_t-1
+        X_diff = self.weights_by_rank.diff()
+
+        # Shift the strategy one period forward to align it with the current weights
+        theta_shifted = self.strategy.shift(1)
+
+        # Multiply the result by theta(t-1) using np.dot and sum across the rows
+        result = theta_shifted.apply(lambda row: np.dot(row, X_diff.loc[row.name]), axis=1)
+
+        # Drop the first date since it's NaN
+        result = result.dropna()
+
+        return result
+
+
+    def backtest_log_wealth_2(self):
+        self.log_wealths = []
+        self.cumulative_log_wealths = []
+
+        # Initialize sum_log_wealth
+        sum_log_wealth = 0
+
+        # Compute theta_X_diff only once
+        theta_X_diff = self.calculate_theta_X_diff()
+
+        # Iterate over the dates
+        for date in theta_X_diff.index:
+            # Compute term 1: theta_{t-1}^T * (X_t - X_{t-1})
+            term_1 = theta_X_diff.loc[date]
+
+            # Compute term 2: 0.5 * (theta_{t-1}^T * (X_t - X_{t-1}))^2
+            term_2 = 0.5 * (term_1 ** 2)
+
+            # Compute log wealth at time t and update the total log wealth
+            log_wealth_t = term_1 - term_2
+            sum_log_wealth += log_wealth_t
+
+            # Store the results
+            self.log_wealths.append(log_wealth_t)
+            self.cumulative_log_wealths.append(sum_log_wealth)
+
+
+
+
+
+
+
+
     def plot_rets(self, data_path=None):
         fig, ax = plt.subplots(figsize=(10, 3.5))
         ax.plot(self.dates, self.rets)
@@ -198,6 +249,9 @@ class Backtest:
             plt.savefig(f'{data_path}.png', dpi=300)
         
         plt.close()
+
+
+
 
 
 if __name__ == "__main__":
