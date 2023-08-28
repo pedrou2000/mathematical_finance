@@ -29,15 +29,6 @@ Can be found as `thesis.pdf`.
 ### Source Code
 `src` - Contains the Python scripts implementing the core of the investment strategies and backtesting procedures. These scripts include `a_estimation.py`, `backtest.py`, `dataframe_construction.py`, and `optimal_strategies.py`.
 
-## Getting Started
-To get started with using this code, clone this repository into your local environment. You would need Python installed on your system, preferably via an Anaconda distribution to access all necessary libraries. Navigate to the `src` directory to access the source Python scripts. You will also need to get access to the CRSP database and change the data path according to the location of your data.
-
-If you want to replicate the backtesting, navigate to the `2-notebooks` directory and run the desired Jupyter notebook. Backtesting can be easily carried out with the notebook `1-backtest.ipynb`, adjusting the parameters as desired. Make sure to update the path to the data files to your CRSP monthly or daily data directory.
-
-Should you encounter any issues or need further clarification, please refer to the extensive documentation present in my thesis, included in this repository as `thesis.pdf`. It provides a detailed explanation of the theoretical aspects, the rationale behind the implemented strategies, and the results obtained from empirical testing.
-
-This repository stands as a testament to the significant role that Stochastic Portfolio Theory and advanced mathematical models like the rank Jacobi model can play in modern investment strategy development. It's a step forward in bridging the gap between theoretical finance and practical implementation, offering invaluable insights for both academic research and investment practitioners.
-
 ## Dependencies
 This project makes use of various Python libraries for data handling, mathematical computation, and visualization. The primary dependencies include:
 
@@ -46,6 +37,15 @@ This project makes use of various Python libraries for data handling, mathematic
 - `scipy` for scientific and technical computing
 - `matplotlib` and seaborn for data visualization
 - `jupyter` for interactive computing and presenting the work in a user-friendly manner.
+
+## Getting Started
+To get started with using this code, clone this repository into your local environment. You would need Python installed on your system, preferably via an Anaconda distribution to access all necessary libraries. Navigate to the `src` directory to access the source Python scripts. You will also need to get access to the CRSP database and change the data path according to the location of your data.
+
+If you want to replicate the backtesting, navigate to the `2-notebooks` directory and run the desired Jupyter notebook. Backtesting can be easily carried out with the notebook `1-backtest.ipynb`, adjusting the parameters as desired. Make sure to update the path to the data files to your CRSP monthly or daily data directory.
+
+Should you encounter any issues or need further clarification, please refer to the extensive documentation present in my thesis, included in this repository as `thesis.pdf`. It provides a detailed explanation of the theoretical aspects, the rationale behind the implemented strategies, and the results obtained from empirical testing.
+
+This repository stands as a testament to the significant role that Stochastic Portfolio Theory and advanced mathematical models like the rank Jacobi model can play in modern investment strategy development. It's a step forward in bridging the gap between theoretical finance and practical implementation, offering invaluable insights for both academic research and investment practitioners.
 
 ## Contributing
 While this project forms the core of my bachelor's thesis, I firmly believe in the value of collaborative development. If you are interested in contributing to this project, please feel free to fork this repository and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
