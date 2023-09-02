@@ -1,6 +1,6 @@
 # Mathematical Finance, Open Markets, and the Rank Jacobi Model
 ## Introduction
-This repository houses the work completed for my Bachelor's thesis in Mathematics, with a strong focus on Mathematical Finance. The primary subject of this research revolves around open market investment frameworks, especially strategies restricted to the top 'N' stocks based on market capitalization.
+This repository houses the work completed for my Bachelor's thesis in Mathematics, defended as Master’s thesis at Imperial College London, with a strong focus on Mathematical Finance. The primary subject of this research revolves around open market investment frameworks, especially strategies restricted to the top 'N' stocks based on market capitalization.
 
 The research venture has two primary facets: a comprehensive theoretical exploration, followed by empirical testing of derived strategies on historical data. The former delves into the realm of Stochastic Portfolio Theory, investigating the rank Jacobi Model's application in a pure open market environment. The latter facet of the project employs the CRSP data on the WRDS for backtesting the growth optimal strategies obtained through the theoretical exploration, as well as estimating necessary parameters for strategy implementation.
 
